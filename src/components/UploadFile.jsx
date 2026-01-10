@@ -68,8 +68,7 @@ export default function FileUpload() {
 
       xhr.upload.onprogress = (e) => {
         if (e.lengthComputable) {
-          const percent =
-            30 + Math.round((e.loaded / e.total) * 30); // 30 → 60
+          const percent = 30 + Math.round((e.loaded / e.total) * 30); // 30 → 60
           setProgress(percent);
         }
       };
@@ -200,17 +199,40 @@ export default function FileUpload() {
       setProgress(100);
 
       // 3️⃣ Store + Output
-      const { invoice, customer, products } = response;
+      const { invoices } = response;
 
-      dispatch(addInvoice(invoice));
-      if (customer) dispatch(addCustomer(customer));
-      products?.forEach((p) => dispatch(addProduct(p)));
+      invoices.forEach((inv, index) => {
+        dispatch(
+          addInvoice({
+            ...inv.invoice,
+            id: `inv_${Date.now()}_${index}`,
+          })
+        );
+
+        if (inv.customer) {
+          dispatch(
+            addCustomer({
+              ...inv.customer,
+              id: `cust_${Date.now()}_${index}`,
+            })
+          );
+        }
+
+        inv.products.forEach((p, pIndex) => {
+          dispatch(
+            addProduct({
+              ...p,
+              id: `prod_${Date.now()}_${index}_${pIndex}`,
+            })
+          );
+        });
+      });
 
       setOutput(response);
       setStatus(STATUS.SUCCESS);
     } catch (err) {
       console.error(err);
-      setError(err.message || "Something went wrong");
+      setError(err.message + "here in catch" || "Something went wrong");
       dispatch(setInvoiceError(err.message));
       setStatus(STATUS.ERROR);
     }
@@ -252,9 +274,7 @@ export default function FileUpload() {
             hidden
             id="upload"
             accept="image/*,application/pdf,.xlsx,.xls,.docx,text/plain"
-            onChange={(e) =>
-              e.target.files[0] && handleFile(e.target.files[0])
-            }
+            onChange={(e) => e.target.files[0] && handleFile(e.target.files[0])}
             disabled={status === STATUS.PROCESSING}
           />
 

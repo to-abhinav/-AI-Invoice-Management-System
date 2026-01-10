@@ -14,14 +14,13 @@ export async function POST(req) {
       prompt: prompt || "Extract invoice details",
     });
 
-    console.log(data +" *********************from process-file ");
-    
-    return NextResponse.json(data);
+    console.log("from process-file:\n", JSON.stringify(data, null, 2));
+
+    return NextResponse.json({
+      invoices: Array.isArray(data) ? data : [data],
+    });
   } catch (err) {
     console.error(err);
-    return NextResponse.json(
-      { error: err.message },
-      { status: 422 }
-    );
+    return NextResponse.json({ error: err.message }, { status: 422 });
   }
 }
