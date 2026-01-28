@@ -29,6 +29,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Badge } from "@/components/ui/badge";
+import { useSelector } from "react-redux";
 
 // Column definitions
 const productColumns = [
@@ -44,76 +45,98 @@ const productColumns = [
 ];
 
 // Mock product data
-const products = [
-  {
-    productName: "Laptop",
-    quantity: 25,
-    unitPrice: 60000,
-    tax: 18,
-    priceWithTax: 70800,
-    discount: 1000,
-    category: "Electronics",
-    lastSoldDate: "2025-11-02",
-  },
-  {
-    productName: "Wireless Mouse",
-    quantity: 50,
-    unitPrice: 800,
-    tax: 12,
-    priceWithTax: 896,
-    discount: 50,
-    category: "Accessories",
-    lastSoldDate: "2025-10-30",
-  },
-  {
-    productName: "Headphones",
-    quantity: 40,
-    unitPrice: 1500,
-    tax: 18,
-    priceWithTax: 1770,
-    discount: 100,
-    category: "Electronics",
-    lastSoldDate: "2025-11-01",
-  },
-  {
-    productName: "Printer Cartridge",
-    quantity: 15,
-    unitPrice: 1200,
-    tax: 18,
-    priceWithTax: 1416,
-    discount: 0,
-    category: "Office Supplies",
-    lastSoldDate: "2025-11-03",
-  },
-  {
-    productName: "Office Chair",
-    quantity: 10,
-    unitPrice: 4500,
-    tax: 18,
-    priceWithTax: 5310,
-    discount: 200,
-    category: "Furniture",
-    lastSoldDate: "2025-10-29",
-  },
-];
+
+// const products = [
+//   {
+//     productName: "Laptop",
+//     quantity: 25,
+//     unitPrice: 60000,
+//     tax: 18,
+//     priceWithTax: 70800,
+//     discount: 1000,
+//     category: "Electronics",
+//     lastSoldDate: "2025-11-02",
+//   },
+//   {
+//     productName: "Wireless Mouse",
+//     quantity: 50,
+//     unitPrice: 800,
+//     tax: 12,
+//     priceWithTax: 896,
+//     discount: 50,
+//     category: "Accessories",
+//     lastSoldDate: "2025-10-30",
+//   },
+//   {
+//     productName: "Headphones",
+//     quantity: 40,
+//     unitPrice: 1500,
+//     tax: 18,
+//     priceWithTax: 1770,
+//     discount: 100,
+//     category: "Electronics",
+//     lastSoldDate: "2025-11-01",
+//   },
+//   {
+//     productName: "Printer Cartridge",
+//     quantity: 15,
+//     unitPrice: 1200,
+//     tax: 18,
+//     priceWithTax: 1416,
+//     discount: 0,
+//     category: "Office Supplies",
+//     lastSoldDate: "2025-11-03",
+//   },
+//   {
+//     productName: "Office Chair",
+//     quantity: 10,
+//     unitPrice: 4500,
+//     tax: 18,
+//     priceWithTax: 5310,
+//     discount: 200,
+//     category: "Furniture",
+//     lastSoldDate: "2025-10-29",
+//   },
+// ];
 
 // Derived helper
-const calculateRevenue = (p) => (p.quantity * p.priceWithTax).toLocaleString("en-IN");
+const calculateRevenue = (p) =>
+  (p.quantity * p.priceWithTax).toLocaleString("en-IN");
 
 export default function ProductsTable() {
   const [filterValue, setFilterValue] = useState("");
   const [visibleColumns, setVisibleColumns] = useState(
-    new Set(productColumns.map((c) => c.uid))
+    new Set(productColumns.map((c) => c.uid)),
   );
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [sortColumn, setSortColumn] = useState("productName");
   const [sortDirection, setSortDirection] = useState("asc");
 
+  const productsFromRedux =
+    useSelector((state) => state.products.productsList) || [];
+  const products = useMemo(() => {
+    return productsFromRedux.map((p) => ({
+      productName: p.name ?? "Unnamed Product",
+      quantity: p.quantity,
+      unitPrice: p.unitPrice,
+      tax: p.tax,
+      priceWithTax: p.priceWithTax,
+      discount: p.discount,
+      category: p.category,
+      lastSoldDate: p.lastSoldDate || "-",
+    }));
+  }, [productsFromRedux]);
+
+  console.log("here in product tab");
+  
+  console.log(productsFromRedux, products);
+  
+
   // Filter
   const filtered = useMemo(() => {
     return products.filter((p) =>
-      p.productName.toLowerCase().includes(filterValue.toLowerCase())
+      p.productName.toLowerCase().includes(filterValue.toLowerCase()),
     );
   }, [filterValue]);
 
@@ -178,7 +201,6 @@ export default function ProductsTable() {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
-
         </div>
       </div>
 
@@ -196,7 +218,9 @@ export default function ProductsTable() {
                     onClick={() => {
                       setSortColumn(col.uid);
                       setSortDirection((prev) =>
-                        sortColumn === col.uid && prev === "asc" ? "desc" : "asc"
+                        sortColumn === col.uid && prev === "asc"
+                          ? "desc"
+                          : "asc",
                       );
                     }}
                   >
@@ -223,12 +247,12 @@ export default function ProductsTable() {
                         {col.uid === "totalRevenue"
                           ? `₹${calculateRevenue(product)}`
                           : col.uid === "unitPrice" ||
-                            col.uid === "priceWithTax" ||
-                            col.uid === "discount"
-                          ? `₹${product[col.uid].toLocaleString("en-IN")}`
-                          : col.uid === "tax"
-                          ? `${product[col.uid]}%`
-                          : product[col.uid] || "-"}
+                              col.uid === "priceWithTax" ||
+                              col.uid === "discount"
+                             ? `₹${Number(product[col.uid] ?? 0).toLocaleString("en-IN")}`
+                            : col.uid === "tax"
+                              ? `${product[col.uid]}%`
+                              : product[col.uid] || "-"}
                       </TableCell>
                     ))}
                   <TableCell>

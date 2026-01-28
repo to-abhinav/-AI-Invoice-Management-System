@@ -72,18 +72,22 @@ export async function processInvoice({ buffer, mimeType, prompt }) {
     contents,
   });
 
+  // console.log("result form gemini", result);
+  
 
   const raw = result.text
     .replace(/```json|```/g, "")
     .replace(/[\u0000-\u001F]+/g, "")
     .trim();
   
-  console.log(raw);
+  // console.log("raw from gemini "+raw);
   
 
   let parsed;
 try {
   parsed = JSON.parse(raw);
+  console.log("json parsed respopnse ", parsed);
+  
 } catch {
   throw new Error("Invalid JSON returned by AI");
 }

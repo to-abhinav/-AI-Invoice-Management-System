@@ -1,18 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { Upload, X, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { Upload, X, Loader2, CheckCircle2, AlertCircle, CheckCircle2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useDispatch } from "react-redux";
+import { v4 } from "uuid";
 import {
   addInvoice,
   setError as setInvoiceError,
 } from "@/store/slices/invoiceSlice";
 import { addProduct } from "@/store/slices/productsSlice";
 import { addCustomer } from "@/store/slices/customerSlice";
+import DebugRedux from "./ReduxButton";
 
 const STATUS = {
   IDLE: "idle",
@@ -199,36 +201,40 @@ export default function FileUpload() {
       setProgress(100);
 
       // 3️⃣ Store + Output
-      const { invoices } = response;
+      const invoices = response.invoices;
+
+      if (!Array.isArray(invoices)) {
+        throw new Error("Invalid API response: invoices is not an array");
+      }
 
       invoices.forEach((inv, index) => {
         dispatch(
           addInvoice({
             ...inv.invoice,
-            id: `inv_${Date.now()}_${index}`,
-          })
+            id: v4(),
+          }),
         );
 
         if (inv.customer) {
           dispatch(
             addCustomer({
               ...inv.customer,
-              id: `cust_${Date.now()}_${index}`,
-            })
+              id: v4(),
+            }),
           );
         }
 
-        inv.products.forEach((p, pIndex) => {
+        inv.products?.forEach((p, pIndex) => {
           dispatch(
             addProduct({
               ...p,
-              id: `prod_${Date.now()}_${index}_${pIndex}`,
-            })
+              id: v4(),
+            }),
           );
         });
       });
 
-      setOutput(response);
+      setOutput({ data: invoices });
       setStatus(STATUS.SUCCESS);
     } catch (err) {
       console.error(err);
@@ -245,6 +251,8 @@ export default function FileUpload() {
     setProgress(0);
     setOutput(null);
   };
+
+  DebugRedux();
 
   /* =========================
      UI
@@ -266,7 +274,7 @@ export default function FileUpload() {
           }}
           className={cn(
             "border-2 border-dashed rounded-2xl p-12 text-center transition",
-            isDragging ? "border-primary bg-primary/10" : "border-gray-300"
+            isDragging ? "border-primary bg-primary/10" : "border-gray-300",
           )}
         >
           <input
@@ -291,7 +299,8 @@ export default function FileUpload() {
           <div className="space-y-2">
             <Progress value={progress} />
             <p className="text-xs flex items-center gap-2 text-muted-foreground">
-              <Loader2 className="h-3 w-3 animate-spin" />
+              {status !== STATUS.SUCCESS ? <Loader2 className="h-3 w-3 animate-spin" /> : <CheckCircle2Icon className="h-3 w-3 text-green-600" />}
+
               {status === STATUS.UPLOADING && "Reading file..."}
               {status === STATUS.PROCESSING && "Analyzing with AI..."}
               {status === STATUS.SUCCESS && "Completed"}
@@ -324,36 +333,51 @@ export default function FileUpload() {
 
         {/* =========================
             OUTPUT SECTION
-        ========================== */}
-        {output && (
+        ========================== */
+        }
+
+        {output?.data && Array.isArray(output.data) && (
           <div className="bg-white rounded-xl border p-6 space-y-6">
             <h2 className="text-lg font-semibold">Extracted Output</h2>
 
-            {/* INVOICE */}
-            <section>
-              <h3 className="font-medium mb-2">Invoice</h3>
-              <pre className="bg-gray-50 p-4 rounded text-xs overflow-x-auto">
-                {JSON.stringify(output.invoice, null, 2)}
-              </pre>
-            </section>
+            {output.data
+              .filter((item) => item.invoice?.serialNumber !== "Totals")
+              .map((item, index) => (
+                <div
+                  key={index}
+                  className="border rounded-lg p-4 space-y-4 bg-gray-50"
+                >
+                  {/* INVOICE */}
+                  <section>
+                    <h3 className="font-medium mb-1">
+                      Invoice #{item.invoice?.serialNumber || index + 1}
+                    </h3>
+                    <pre className="bg-white p-3 rounded text-xs overflow-x-auto">
+                      {JSON.stringify(item.invoice, null, 2)}
+                    </pre>
+                  </section>
 
-            {/* CUSTOMER */}
-            {output.customer && (
-              <section>
-                <h3 className="font-medium mb-2">Customer</h3>
-                <pre className="bg-gray-50 p-4 rounded text-xs overflow-x-auto">
-                  {JSON.stringify(output.customer, null, 2)}
-                </pre>
-              </section>
-            )}
+                  {/* CUSTOMER */}
+                  {item.customer && (
+                    <section>
+                      <h3 className="font-medium mb-1">Customer</h3>
+                      <pre className="bg-white p-3 rounded text-xs overflow-x-auto">
+                        {JSON.stringify(item.customer, null, 2)}
+                      </pre>
+                    </section>
+                  )}
 
-            {/* PRODUCTS */}
-            <section>
-              <h3 className="font-medium mb-2">Products</h3>
-              <pre className="bg-gray-50 p-4 rounded text-xs overflow-x-auto">
-                {JSON.stringify(output.products, null, 2)}
-              </pre>
-            </section>
+                  {/* PRODUCTS */}
+                  {Array.isArray(item.products) && item.products.length > 0 && (
+                    <section>
+                      <h3 className="font-medium mb-1">Products</h3>
+                      <pre className="bg-white p-3 rounded text-xs overflow-x-auto">
+                        {JSON.stringify(item.products, null, 2)}
+                      </pre>
+                    </section>
+                  )}
+                </div>
+              ))}
           </div>
         )}
       </div>

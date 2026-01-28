@@ -1,0 +1,123 @@
+ {
+  sdkHttpResponse: {
+    headers: {
+      'alt-svc': 'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000',
+      'content-encoding': 'gzip',
+      'content-type': 'application/json; charset=UTF-8',
+      date: 'Wed, 28 Jan 2026 10:35:11 GMT',
+      server: 'scaffolding on HTTPServer2',
+      'server-timing': 'gfet4t7; dur=80341',
+      'transfer-encoding': 'chunked',
+      vary: 'Origin, X-Origin, Referer',
+      'x-content-type-options': 'nosniff',
+      'x-frame-options': 'SAMEORIGIN',
+      'x-xss-protection': '0'
+    }
+  },
+  candidates: [ { content: [Object], finishReason: 'STOP', index: 0 } ],
+  modelVersion: 'gemini-2.5-flash',
+  responseId: 'X-Z5adHzE8KL4-EP7522gAQ',
+  usageMetadata: {
+    promptTokenCount: 1550,
+    candidatesTokenCount: 1687,
+    totalTokenCount: 15771,
+    promptTokensDetails: [ [Object], [Object] ],
+    thoughtsTokenCount: 12534
+  }
+}
+
+ {
+  invoices: [
+    {
+      id: 'invoice_RAY_23_24_286',
+      serialNumber: 'RAY/23-24/286',
+      date: '2024-11-12',
+      customerId: 'customer_Shounak',
+      customerName: 'Shounak',
+      customerCompany: '',
+      customerGSTIN: 'ABCDE1234567890',
+      supplierGSTIN: 'ABCDE1234567890',
+      placeOfSupply: 'Punjab',
+      items: [Array],
+      charges: [Object],
+      totalItems: 3,
+      totalQuantity: 3,
+      taxableAmount: 80324.3,
+      cgst: 0,
+      sgst: 0,
+      igst: 14458.37,
+      totalTax: 14458.37,
+      subtotal: 80324.3,
+      discount: 21592.54,
+      roundOff: 0,
+      grandTotal: 94782.67,
+      amountPayable: 94782.67,
+      status: 'pending',
+      paymentDetails: [Object]
+    }
+  ],
+  products: [
+    {
+      id: 'product_iphone_16',
+      name: 'iPhone 16',
+      unit: 'PCS',
+      unitPrice: 58629.96,
+      taxRate: 18,
+      priceWithTax: 69183.35,
+      discount: 0,
+      totalSold: 1,
+      totalRevenue: 69183.35
+    },
+    {
+      id: 'product_iphone_16_cover',
+      name: 'iPhone 16 Cover',
+      unit: 'PCS',
+      unitPrice: 3370.92,
+      taxRate: 18,
+      priceWithTax: 3977.68,
+      discount: 0,
+      totalSold: 1,
+      totalRevenue: 3977.68
+    },
+    {
+      id: 'product_beats_pro_x',
+      name: 'Beats PRO X',
+      unit: 'PCS',
+      unitPrice: 18323.42,
+      taxRate: 18,
+      priceWithTax: 21621.64,
+      discount: 0,
+      totalSold: 1,
+      totalRevenue: 21621.64
+    }
+  ],
+  customers: [
+    {
+      id: 'customer_Shounak',
+      name: 'Shounak',
+      company: '',
+      gstin: 'ABCDE1234567890',
+      phone: '',
+      email: '',
+      totalPurchaseAmount: 94782.67,
+      totalInvoices: 1,
+      status: 'active',
+      validationErrors: []
+    }
+  ],
+  metadata: {
+    totalInvoices: 1,
+    totalProducts: 3,
+    totalCustomers: 1,
+    totalRevenue: 94782.67,
+    totalTax: 14458.37,
+    extractionDate: '2024-05-27T12:00:00Z',
+    sourceFile: 'invoice_input.jpg',
+    validationStatus: 'complete',
+    missingFields: [],
+    warnings: [
+      "The explicit item discounts (e.g., Disc(7%)) do not directly reconcile with the final item 'AMOUNT' values; the 'discount' field at the invoice level represents the total effective discount required to match the overall invoice totals.",  
+      'Item unit (PCS) assumed based on product type as not explicitly stated.'   
+    ]
+  }
+}

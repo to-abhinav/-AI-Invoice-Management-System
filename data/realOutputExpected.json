@@ -1,0 +1,542 @@
+{
+  "invoices": [
+    {
+      "id": "RAY/23-24/286",
+      "serialNumber": "RAY/23-24/286",
+      "date": "2024-11-12",
+      "customerId": "customer_001",
+      "customerName": "Shounak",
+      "customerCompany": "NextSpeed Technologies Pvt Ltd",
+      "items": [
+        {
+          "productId": "product_001",
+          "productName": "iPhone 16",
+          "quantity": 1,
+          "unit": "OTH",
+          "unitPrice": 67788.14,
+          "tax": 18,
+          "priceWithTax": 79990.00,
+          "totalAmount": 79990.00
+        },
+        {
+          "productId": "product_002",
+          "productName": "iPhone 16 Cover",
+          "quantity": 1,
+          "unit": "OTH",
+          "unitPrice": 3896.44,
+          "tax": 18,
+          "priceWithTax": 4599.00,
+          "totalAmount": 4599.00
+        },
+        {
+          "productId": "product_003",
+          "productName": "Beats Pro X",
+          "quantity": 1,
+          "unit": "OTH",
+          "unitPrice": 21185.59,
+          "tax": 18,
+          "priceWithTax": 24999.00,
+          "totalAmount": 24999.00
+        }
+      ],
+      "subtotal": 92870.17,
+      "cgst": 8358.61,
+      "sgst": 8358.61,
+      "igst": 0,
+      "discount": 0,
+      "roundOff": 0.01,
+      "grandTotal": 109587.40,
+      "status": "pending"
+    },
+    {
+      "id": "RAY/23-24/285",
+      "serialNumber": "RAY/23-24/285",
+      "date": "2024-11-12",
+      "customerId": "customer_002",
+      "customerName": "Abhinav",
+      "customerCompany": "GAME STATION",
+      "items": [
+        {
+          "productId": "product_004",
+          "productName": "Speaker",
+          "quantity": 1,
+          "unit": "OTH",
+          "unitPrice": 10000.00,
+          "tax": 0,
+          "priceWithTax": 10000.00,
+          "totalAmount": 10000.00
+        }
+      ],
+      "subtotal": 10000.00,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "discount": 0,
+      "roundOff": 0,
+      "grandTotal": 10000.00,
+      "status": "pending"
+    },
+    {
+      "id": "RAY/23-24/284",
+      "serialNumber": "RAY/23-24/284",
+      "date": "2024-11-08",
+      "customerId": "customer_003",
+      "customerName": "Ramesh",
+      "customerCompany": "Apple India",
+      "items": [
+        {
+          "productId": "product_005",
+          "productName": "12 MM Plain Glass",
+          "quantity": 1,
+          "unit": "SQF",
+          "unitPrice": 88.98,
+          "tax": 0,
+          "priceWithTax": 88.98,
+          "totalAmount": 88.98
+        }
+      ],
+      "subtotal": 88.98,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "discount": 0,
+      "roundOff": 0,
+      "grandTotal": 88.98,
+      "status": "pending"
+    },
+    {
+      "id": "RAY/23-24/283",
+      "serialNumber": "RAY/23-24/283",
+      "date": "2024-11-08",
+      "customerId": "customer_003",
+      "customerName": "Ramesh",
+      "customerCompany": "Apple India",
+      "items": [
+        {
+          "productId": "product_005",
+          "productName": "12 MM Plain Glass",
+          "quantity": 1,
+          "unit": "SQF",
+          "unitPrice": 88.98,
+          "tax": 0,
+          "priceWithTax": 88.98,
+          "totalAmount": 88.98
+        }
+      ],
+      "subtotal": 88.98,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "discount": 0,
+      "roundOff": 0,
+      "grandTotal": 88.98,
+      "status": "pending"
+    },
+    {
+      "id": "RAY/23-24/282",
+      "serialNumber": "RAY/23-24/282",
+      "date": "2024-11-07",
+      "customerId": "customer_004",
+      "customerName": "RAM",
+      "customerCompany": "Apple India",
+      "items": [
+        {
+          "productId": "product_005",
+          "productName": "12 MM Plain Glass",
+          "quantity": 500,
+          "unit": "SQF",
+          "unitPrice": 0.07,
+          "tax": 0,
+          "priceWithTax": 0.07,
+          "totalAmount": 37.08
+        }
+      ],
+      "subtotal": 37.08,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "discount": 0,
+      "roundOff": 0,
+      "grandTotal": 37.08,
+      "status": "pending"
+    },
+    {
+      "id": "RAY/23-24/281",
+      "serialNumber": "RAY/23-24/281",
+      "date": "2024-11-07",
+      "customerId": "customer_004",
+      "customerName": "RAM",
+      "customerCompany": "Apple India",
+      "items": [
+        {
+          "productId": "product_005",
+          "productName": "12 MM Plain Glass",
+          "quantity": 1,
+          "unit": "SQF",
+          "unitPrice": 88.98,
+          "tax": 0,
+          "priceWithTax": 88.98,
+          "totalAmount": 88.98
+        }
+      ],
+      "subtotal": 88.98,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "discount": 0,
+      "roundOff": 0,
+      "grandTotal": 88.98,
+      "status": "pending"
+    },
+    {
+      "id": "RAY/23-24/280",
+      "serialNumber": "RAY/23-24/280",
+      "date": "2024-11-06",
+      "customerId": "customer_003",
+      "customerName": "Ramesh",
+      "customerCompany": "Apple India",
+      "items": [
+        {
+          "productId": "product_005",
+          "productName": "12 MM Plain Glass",
+          "quantity": 1,
+          "unit": "SQF",
+          "unitPrice": 88.98,
+          "tax": 18,
+          "priceWithTax": 105.00,
+          "totalAmount": 105.00
+        },
+        {
+          "productId": "product_006",
+          "productName": "Plain Glass",
+          "quantity": 1,
+          "unit": "OTH",
+          "unitPrice": 0.00,
+          "tax": 18,
+          "priceWithTax": 0.00,
+          "totalAmount": 0.00
+        }
+      ],
+      "subtotal": 88.98,
+      "cgst": 8.01,
+      "sgst": 8.01,
+      "igst": 0,
+      "discount": 0,
+      "roundOff": 0,
+      "grandTotal": 105.00,
+      "status": "pending"
+    },
+    {
+      "id": "RAY/23-24/279",
+      "serialNumber": "RAY/23-24/279",
+      "date": "2024-11-05",
+      "customerId": "customer_002",
+      "customerName": "Abhinav",
+      "customerCompany": "GAME STATION",
+      "items": [
+        {
+          "productId": "product_007",
+          "productName": "CT Sheet",
+          "quantity": 3,
+          "unit": "OTH",
+          "unitPrice": 500.00,
+          "tax": 0,
+          "priceWithTax": 500.00,
+          "totalAmount": 1500.00
+        }
+      ],
+      "subtotal": 1500.00,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "discount": 0,
+      "roundOff": 0,
+      "grandTotal": 1500.00,
+      "status": "pending"
+    },
+    {
+      "id": "RAY/23-24/278",
+      "serialNumber": "RAY/23-24/278",
+      "date": "2024-11-05",
+      "customerId": "customer_005",
+      "customerName": "Decathlon",
+      "customerCompany": "DECATHLON SPORTS INDIA PRIVATE LIMITED",
+      "items": [
+        {
+          "productId": "product_005",
+          "productName": "12 MM Plain Glass",
+          "quantity": 1,
+          "unit": "SQF",
+          "unitPrice": 88.98,
+          "tax": 18,
+          "priceWithTax": 105.00,
+          "totalAmount": 105.00
+        }
+      ],
+      "subtotal": 88.98,
+      "cgst": 8.01,
+      "sgst": 8.01,
+      "igst": 0,
+      "discount": 0,
+      "roundOff": 0,
+      "grandTotal": 105.00,
+      "status": "pending"
+    },
+    {
+      "id": "RAY/23-24/277",
+      "serialNumber": "RAY/23-24/277",
+      "date": "2024-11-02",
+      "customerId": "customer_002",
+      "customerName": "Abhinav",
+      "customerCompany": "GAME STATION",
+      "items": [
+        {
+          "productId": "product_005",
+          "productName": "12 MM Plain Glass",
+          "quantity": 15,
+          "unit": "SQF",
+          "unitPrice": 9.75,
+          "tax": 18,
+          "priceWithTax": 11.50,
+          "totalAmount": 172.50
+        }
+      ],
+      "subtotal": 146.19,
+      "cgst": 13.16,
+      "sgst": 13.16,
+      "igst": 0,
+      "discount": 0,
+      "roundOff": -0.01,
+      "grandTotal": 172.50,
+      "status": "pending"
+    },
+    {
+      "id": "RAY/23-24/276",
+      "serialNumber": "RAY/23-24/276",
+      "date": "2024-11-01",
+      "customerId": "customer_006",
+      "customerName": "Geetha",
+      "customerCompany": "Flipkart Co",
+      "items": [
+        {
+          "productId": "product_006",
+          "productName": "Plain Glass",
+          "quantity": 1,
+          "unit": "OTH",
+          "unitPrice": 600.00,
+          "tax": 18,
+          "priceWithTax": 708.00,
+          "totalAmount": 708.00
+        }
+      ],
+      "subtotal": 600.00,
+      "cgst": 54.00,
+      "sgst": 54.00,
+      "igst": 0,
+      "discount": 0,
+      "roundOff": 0,
+      "grandTotal": 708.00,
+      "status": "pending"
+    },
+    {
+      "id": "RAY/23-24/275",
+      "serialNumber": "RAY/23-24/275",
+      "date": "2024-11-01",
+      "customerId": "customer_006",
+      "customerName": "Geetha",
+      "customerCompany": "Flipkart Co",
+      "items": [
+        {
+          "productId": "product_006",
+          "productName": "Plain Glass",
+          "quantity": 100,
+          "unit": "OTH",
+          "unitPrice": 500.00,
+          "tax": 18,
+          "priceWithTax": 590.00,
+          "totalAmount": 59000.00
+        }
+      ],
+      "subtotal": 50000.00,
+      "cgst": 4500.00,
+      "sgst": 4500.00,
+      "igst": 0,
+      "discount": 0,
+      "roundOff": 0,
+      "grandTotal": 59000.00,
+      "status": "paid"
+    }
+  ],
+  "products": [
+    {
+      "id": "product_001",
+      "name": "iPhone 16",
+      "unit": "OTH",
+      "quantity": 1,
+      "unitPrice": 67788.14,
+      "tax": 18,
+      "priceWithTax": 79990.00,
+      "discount": 0,
+      "totalSold": 1,
+      "totalRevenue": 79990.00
+    },
+    {
+      "id": "product_002",
+      "name": "iPhone 16 Cover",
+      "unit": "OTH",
+      "quantity": 1,
+      "unitPrice": 3896.44,
+      "tax": 18,
+      "priceWithTax": 4599.00,
+      "discount": 0,
+      "totalSold": 1,
+      "totalRevenue": 4599.00
+    },
+    {
+      "id": "product_003",
+      "name": "Beats Pro X",
+      "unit": "OTH",
+      "quantity": 1,
+      "unitPrice": 21185.59,
+      "tax": 18,
+      "priceWithTax": 24999.00,
+      "discount": 0,
+      "totalSold": 1,
+      "totalRevenue": 24999.00
+    },
+    {
+      "id": "product_004",
+      "name": "Speaker",
+      "unit": "OTH",
+      "quantity": 1,
+      "unitPrice": 10000.00,
+      "tax": 0,
+      "priceWithTax": 10000.00,
+      "discount": 0,
+      "totalSold": 1,
+      "totalRevenue": 10000.00
+    },
+    {
+      "id": "product_005",
+      "name": "12 MM Plain Glass",
+      "unit": "SQF",
+      "quantity": 520,
+      "unitPrice": 88.98,
+      "tax": 18,
+      "priceWithTax": 105.00,
+      "discount": 0,
+      "totalSold": 520,
+      "totalRevenue": 21302.44
+    },
+    {
+      "id": "product_006",
+      "name": "Plain Glass",
+      "unit": "OTH",
+      "quantity": 102,
+      "unitPrice": 500.00,
+      "tax": 18,
+      "priceWithTax": 590.00,
+      "discount": 0,
+      "totalSold": 102,
+      "totalRevenue": 59708.00
+    },
+    {
+      "id": "product_007",
+      "name": "CT Sheet",
+      "unit": "OTH",
+      "quantity": 3,
+      "unitPrice": 500.00,
+      "tax": 0,
+      "priceWithTax": 500.00,
+      "discount": 0,
+      "totalSold": 3,
+      "totalRevenue": 1500.00
+    }
+  ],
+  "customers": [
+    {
+      "id": "customer_001",
+      "name": "Shounak",
+      "company": "NextSpeed Technologies Pvt Ltd",
+      "phone": "",
+      "email": "",
+      "totalPurchaseAmount": 109587.40,
+      "totalInvoices": 1,
+      "status": "active",
+      "validationErrors": ["phone_missing"]
+    },
+    {
+      "id": "customer_002",
+      "name": "Abhinav",
+      "company": "GAME STATION",
+      "phone": "",
+      "email": "",
+      "totalPurchaseAmount": 11672.50,
+      "totalInvoices": 3,
+      "status": "active",
+      "validationErrors": ["phone_missing"]
+    },
+    {
+      "id": "customer_003",
+      "name": "Ramesh",
+      "company": "Apple India",
+      "phone": "",
+      "email": "",
+      "totalPurchaseAmount": 283.96,
+      "totalInvoices": 3,
+      "status": "active",
+      "validationErrors": ["phone_missing"]
+    },
+    {
+      "id": "customer_004",
+      "name": "RAM",
+      "company": "Apple India",
+      "phone": "",
+      "email": "",
+      "totalPurchaseAmount": 126.06,
+      "totalInvoices": 2,
+      "status": "active",
+      "validationErrors": ["phone_missing"]
+    },
+    {
+      "id": "customer_005",
+      "name": "Decathlon",
+      "company": "DECATHLON SPORTS INDIA PRIVATE LIMITED",
+      "phone": "",
+      "email": "",
+      "totalPurchaseAmount": 105.00,
+      "totalInvoices": 1,
+      "status": "active",
+      "validationErrors": ["phone_missing"]
+    },
+    {
+      "id": "customer_006",
+      "name": "Geetha",
+      "company": "Flipkart Co",
+      "phone": "",
+      "email": "",
+      "totalPurchaseAmount": 59708.00,
+      "totalInvoices": 2,
+      "status": "active",
+      "validationErrors": ["phone_missing"]
+    }
+  ],
+  "metadata": {
+    "totalInvoices": 12,
+    "totalProducts": 7,
+    "totalCustomers": 6,
+    "totalRevenue": 181499.69,
+    "totalCGST": 11486.11,
+    "totalSGST": 11486.11,
+    "totalIGST": 3139.33,
+    "extractionDate": "2024-01-24T00:00:00Z",
+    "sourceFile": "Transaction-details.xlsx",
+    "validationStatus": "partial",
+    "missingFields": ["customer_phone_numbers"],
+    "warnings": [
+      "Invoice RAY/23-24/280 has item with 0.00 price",
+      "Multiple products normalized under '12 MM Plain Glass'",
+      "All customers missing phone numbers"
+    ]
+  }
+}

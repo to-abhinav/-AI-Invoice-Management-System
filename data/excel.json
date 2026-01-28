@@ -1,0 +1,321 @@
+ [
+  {
+    "invoice": {
+      "serialNumber": "RAY/23-24/286",
+      "customerName": "Shounak",
+      "productName": "iPHONE 16",
+      "quantity": 3,
+      "tax": 0,
+      "totalAmount": 0
+    },
+    "products": [
+      {
+        "name": "iPHONE 16",
+        "quantity": 1,
+        "unitPrice": 0,
+        "tax": 0,
+        "priceWithTax": 0
+      },
+      {
+        "name": "iPHONE 16 Cover",
+        "quantity": 1,
+        "unitPrice": 0,
+        "tax": 0,
+        "priceWithTax": 0
+      },
+      {
+        "name": "Beats PRO X",
+        "quantity": 1,
+        "unitPrice": 0,
+        "tax": 0,
+        "priceWithTax": 0
+      }
+    ],
+    "customer": {
+      "name": "Shounak",
+      "totalPurchaseAmount": 0
+    }
+  },
+  {
+    "invoice": {
+      "serialNumber": "RAY/23-24/285",
+      "customerName": "Abhinav",
+      "productName": "SPEAKER",
+      "quantity": 1,
+      "tax": 0,
+      "totalAmount": 0
+    },
+    "products": [
+      {
+        "name": "SPEAKER",
+        "quantity": 1,
+        "unitPrice": 0,
+        "tax": 0,
+        "priceWithTax": 0
+      }
+    ],
+    "customer": {
+      "name": "Abhinav",
+      "totalPurchaseAmount": 0
+    }
+  },
+  {
+    "invoice": {
+      "serialNumber": "RAY/23-24/284",
+      "customerName": "Ramesh",
+      "productName": "12 MM PLAIN GLASS",
+      "quantity": 1,
+      "tax": 0,
+      "totalAmount": 0
+    },
+    "products": [
+      {
+        "name": "12 MM PLAIN GLASS",
+        "quantity": 1,
+        "unitPrice": 0,
+        "tax": 0,
+        "priceWithTax": 0
+      }
+    ],
+    "customer": {
+      "name": "Ramesh",
+      "totalPurchaseAmount": 0
+    }
+  },
+  {
+    "invoice": {
+      "serialNumber": "RAY/23-24/283",
+      "customerName": "Ramesh",
+      "productName": "12 MM PLAIN GLASS",
+      "quantity": 1,
+      "tax": 0,
+      "totalAmount": 0
+    },
+    "products": [
+      {
+        "name": "12 MM PLAIN GLASS",
+        "quantity": 1,
+        "unitPrice": 0,
+        "tax": 0,
+        "priceWithTax": 0
+      }
+    ],
+    "customer": {
+      "name": "Ramesh",
+      "totalPurchaseAmount": 0
+    }
+  },
+  {
+    "invoice": {
+      "serialNumber": "RAY/23-24/282",
+      "customerName": "RAM",
+      "productName": "12 MM PLAIN GLASS",
+      "quantity": 500,
+      "tax": 0,
+      "totalAmount": 0
+    },
+    "products": [
+      {
+        "name": "12 MM PLAIN GLASS",
+        "quantity": 500,
+        "unitPrice": 0,
+        "tax": 0,
+        "priceWithTax": 0
+      }
+    ],
+    "customer": {
+      "name": "RAM",
+      "totalPurchaseAmount": 0
+    }
+  },
+  {
+    "invoice": {
+      "serialNumber": "RAY/23-24/281",
+      "customerName": "RAM",
+      "productName": "12 MM PLAIN GLASS",
+      "quantity": 1,
+      "tax": 0,
+      "totalAmount": 0
+    },
+    "products": [
+      {
+        "name": "12 MM PLAIN GLASS",
+        "quantity": 1,
+        "unitPrice": 0,
+        "tax": 0,
+        "priceWithTax": 0
+      }
+    ],
+    "customer": {
+      "name": "RAM",
+      "totalPurchaseAmount": 0
+    }
+  },
+  {
+    "invoice": {
+      "serialNumber": "RAY/23-24/280",
+      "customerName": "Ramesh",
+      "productName": "12 MM PLAIN GLASS",
+      "quantity": 2,
+      "tax": 0,
+      "totalAmount": 0
+    },
+    "products": [
+      {
+        "name": "12 MM PLAIN GLASS",
+        "quantity": 1,
+        "unitPrice": 0,
+        "tax": 0,
+        "priceWithTax": 0
+      },
+      {
+        "name": "plain glass",
+        "quantity": 1,
+        "unitPrice": 0,
+        "tax": 0,
+        "priceWithTax": 0
+      }
+    ],
+    "customer": {
+      "name": "Ramesh",
+      "totalPurchaseAmount": 0
+    }
+  },
+  {
+    "invoice": {
+      "serialNumber": "RAY/23-24/279",
+      "customerName": "Abhinav",
+      "productName": "Ct Sheet",
+      "quantity": 3,
+      "tax": 0,
+      "totalAmount": 0
+    },
+    "products": [
+      {
+        "name": "Ct Sheet",
+        "quantity": 3,
+        "unitPrice": 0,
+        "tax": 0,
+        "priceWithTax": 0
+      }
+    ],
+    "customer": {
+      "name": "Abhinav",
+      "totalPurchaseAmount": 0
+    }
+  },
+  {
+    "invoice": {
+      "serialNumber": "RAY/23-24/278",
+      "customerName": "Decathlon",
+      "productName": "12 MM PLAIN GLASS",
+      "quantity": 1,
+      "tax": 0,
+      "totalAmount": 0
+    },
+    "products": [
+      {
+        "name": "12 MM PLAIN GLASS",
+        "quantity": 1,
+        "unitPrice": 0,
+        "tax": 0,
+        "priceWithTax": 0
+      }
+    ],
+    "customer": {
+      "name": "Decathlon",
+      "totalPurchaseAmount": 0
+    }
+  },
+  {
+    "invoice": {
+      "serialNumber": "RAY/23-24/277",
+      "customerName": "Abhinav",
+      "productName": "12 MM PLAIN GLASS",
+      "quantity": 15,
+      "tax": 0,
+      "totalAmount": 0
+    },
+    "products": [
+      {
+        "name": "12 MM PLAIN GLASS",
+        "quantity": 15,
+        "unitPrice": 0,
+        "tax": 0,
+        "priceWithTax": 0
+      }
+    ],
+    "customer": {
+      "name": "Abhinav",
+      "totalPurchaseAmount": 0
+    }
+  },
+  {
+    "invoice": {
+      "serialNumber": "RAY/23-24/276",
+      "customerName": "geeetha",
+      "productName": "plain glass",
+      "quantity": 1,
+      "tax": 0,
+      "totalAmount": 0
+    },
+    "products": [
+      {
+        "name": "plain glass",
+        "quantity": 1,
+        "unitPrice": 0,
+        "tax": 0,
+        "priceWithTax": 0
+      }
+    ],
+    "customer": {
+      "name": "geeetha",
+      "totalPurchaseAmount": 0
+    }
+  },
+  {
+    "invoice": {
+      "serialNumber": "RAY/23-24/275",
+      "customerName": "geeetha",
+      "productName": "plain glass",
+      "quantity": 100,
+      "tax": 0,
+      "totalAmount": 0
+    },
+    "products": [
+      {
+        "name": "plain glass",
+        "quantity": 100,
+        "unitPrice": 0,
+        "tax": 0,
+        "priceWithTax": 0
+      }
+    ],
+    "customer": {
+      "name": "geeetha",
+      "totalPurchaseAmount": 0
+    }
+  },
+  {
+    "invoice": {
+      "serialNumber": "Totals",
+      "customerName": "",
+      "productName": "",
+      "quantity": 629,
+      "tax": 0,
+      "totalAmount": 0
+    },
+    "products": [
+      {
+        "quantity": 629,
+        "unitPrice": 0,
+        "tax": 0,
+        "priceWithTax": 0
+      }
+    ],
+    "customer": {
+      "name": "",
+      "totalPurchaseAmount": 0
+    }
+  }
+]

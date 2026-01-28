@@ -28,6 +28,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { useSelector } from "react-redux";
 
 const columns = [
   { name: "S.No", uid: "serial" },
@@ -40,75 +41,39 @@ const columns = [
   { name: "Date", uid: "date" },
 ];
 
-const invoices = [
-  {
-    customerName: "Rohit Sharma",
-    productName: "Laptop",
-    tax: "18%",
-    quantity: 1,
-    totalAmount: 65000,
-    date: "2025-11-01",
-  },
-  {
-    customerName: "Priya Mehta",
-    productName: "Headphones",
-    tax: "12%",
-    quantity: 2,
-    totalAmount: 4480,
-    date: "2025-11-02",
-  },
-  {
-    customerName: "Vikas Gupta",
-    productName: "Smartphone",
-    tax: "18%",
-    quantity: 1,
-    totalAmount: 29999,
-    date: "2025-11-03",
-  },
-  {
-    customerName: "Aisha Khan",
-    productName: "Tablet",
-    tax: "",
-    quantity: 1,
-    totalAmount: 19500,
-    date: "",
-  },
-  {
-    customerName: "",
-    productName: "Monitor",
-    tax: "18%",
-    quantity: 2,
-    totalAmount: 22000,
-    date: "2025-11-04",
-  },
-  {
-    customerName: "Sneha Verma",
-    productName: "",
-    tax: "12%",
-    quantity: 3,
-    totalAmount: 3600,
-    date: "2025-11-05",
-  },
-];
-
 export default function InvoicesTable() {
   const [filterValue, setFilterValue] = useState("");
   const [visibleColumns, setVisibleColumns] = useState(
-    new Set(columns.map((c) => c.uid))
+    new Set(columns.map((c) => c.uid)),
   );
   const [page, setPage] = useState(1);
   const [rowsPerPage] = useState(5);
   const [sortColumn, setSortColumn] = useState("date");
   const [sortDirection, setSortDirection] = useState("asc");
+  const invoicesFromRedux =
+    useSelector((state) => state.invoices.invoiceList) || [];
+
+  const tableInvoices = useMemo(() => {
+    return invoicesFromRedux.map((inv) => ({
+      invoiceId: inv.serialNumber,
+      customerName: inv.customerName,
+      productName: inv.productName,
+      quantity: inv.quantity,
+      tax: inv.tax,
+      totalAmount: inv.totalAmount,
+      date: inv.date,
+      serial: inv.serialNumber,
+    }));
+  }, [invoicesFromRedux]);
 
   // Filter
   const filtered = useMemo(() => {
-    return invoices.filter(
+    return tableInvoices.filter(
       (invoice) =>
         invoice.customerName
           ?.toLowerCase()
           .includes(filterValue.toLowerCase()) ||
-        invoice.productName?.toLowerCase().includes(filterValue.toLowerCase())
+        invoice.productName?.toLowerCase().includes(filterValue.toLowerCase()),
     );
   }, [filterValue]);
 
@@ -130,6 +95,14 @@ export default function InvoicesTable() {
     const end = start + rowsPerPage;
     return sorted.slice(start, end);
   }, [sorted, page, rowsPerPage]);
+
+  // if (tableInvoices.length === 0) {
+  //   return (
+  //     <div className="flex flex-col items-center justify-center h-64 space-y-4">
+  //       <p className="text-lg text-gray-600">No invoices available.</p>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="p-6 space-y-4">
@@ -192,7 +165,7 @@ export default function InvoicesTable() {
                       setSortDirection((prev) =>
                         sortColumn === col.uid && prev === "asc"
                           ? "desc"
-                          : "asc"
+                          : "asc",
                       );
                     }}
                   >
@@ -279,7 +252,9 @@ export default function InvoicesTable() {
             <PaginationItem>
               <PaginationNext
                 onClick={() => setPage((p) => Math.min(pages, p + 1))}
-                className={page === pages ? "pointer-events-none opacity-50" : ""}
+                className={
+                  page === pages ? "pointer-events-none opacity-50" : ""
+                }
               />
             </PaginationItem>
           </PaginationContent>
