@@ -2,9 +2,7 @@ import { gemini } from "./geminiClient";
 import { InvoiceSchema } from "../schema/invoiceSchema";
 import { normalizeProducts } from "./normalizeInvoice";
 import { sanitizeInvoiceData } from "./sanitizeInvoice";
-import { parseExcelRows } from "./parseExcelRows";
-import { groupInvoices } from "./groupInvoices";
-import { buildInvoiceFromRows } from "./buildInvoiceFromRows";
+
 
 
 export async function processInvoice({ buffer, mimeType, prompt }) {
@@ -22,43 +20,6 @@ export async function processInvoice({ buffer, mimeType, prompt }) {
       },
     ];
   }
-
-  // EXCEL
-  else if (mimeType.includes("excel") || mimeType.includes("spreadsheet")) {
-  const rows = parseExcelRows(buffer);
-  const groups = groupInvoices(rows);
-
-  const results = [];
-
-  for (const group of groups) {
-    const baseInvoice = buildInvoiceFromRows(
-      group.rows,
-      group.serialNumber
-    );
-
-    // // OPTIONAL AI ENRICHMENT
-    // const aiResult = await gemini.models.generateContent({
-    //   model: "gemini-2.5-flash",
-    //   contents: [
-    //     { text: "Normalize product names and customer fields." },
-    //     { text: JSON.stringify(baseInvoice) },
-    //   ],
-    // });
-
-    let enriched = baseInvoice;
-
-    // try {
-    //   const raw = aiResult.text.replace(/```json|```/g, "").trim();
-    //   enriched = { ...baseInvoice, ...JSON.parse(raw) };
-    // } catch {
-    //   // fallback to deterministic result
-    // }
-
-    results.push(enriched);
-  }
-
-  return results; // ARRAY of invoices
-}
 
   // TEXT / CSV / DOC
   else {
@@ -85,7 +46,7 @@ export async function processInvoice({ buffer, mimeType, prompt }) {
   let parsed;
 try {
   parsed = JSON.parse(raw);
-  console.log("json parsed respopnse ", parsed);
+  console.log("json parsed respopnse in processInvoice", parsed);
   
 } catch {
   throw new Error("Invalid JSON returned by AI");
