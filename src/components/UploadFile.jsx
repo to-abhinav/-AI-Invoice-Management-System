@@ -1,7 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Upload, X, Loader2, CheckCircle2, AlertCircle, CheckCircle2Icon } from "lucide-react";
+import {
+  Upload,
+  X,
+  Loader2,
+  CheckCircle2,
+  AlertCircle,
+  CheckCircle2Icon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -15,6 +22,8 @@ import {
 import { addProduct } from "@/store/slices/productsSlice";
 import { addCustomer } from "@/store/slices/customerSlice";
 import DebugRedux from "./ReduxButton";
+import { excelToJsonStrict } from "@/lib/ai/excelToJsonStrict";
+import isExcel from "@/lib/ai/isExcel";
 
 const STATUS = {
   IDLE: "idle",
@@ -110,118 +119,316 @@ export default function FileUpload() {
       setProgress(0);
       setStatus(STATUS.UPLOADING);
 
-      // 1️⃣ Read file
-      const dataUrl = await readAsBase64(selectedFile);
+      var response;
 
-      // 2️⃣ Upload + AI processing
-      setStatus(STATUS.PROCESSING);
+      if (await isExcel(selectedFile)) {
+        console.log("the file uploaded is excel");
+
+        const excelJsonData = await excelToJsonStrict(selectedFile);
+        console.log("excel to json data", excelJsonData);
+
+        setStatus(STATUS.PROCESSING);
+        response = await postWithProgress("/api/process-excel", {
+          excelJsonData,
+          prompt: `You are an invoice data extraction AI. Extract structured data from invoice inputs (PDF text, Excel rows, OCR text from images, or mixed files).
+
+Return ONLY a valid JSON object. Do not include explanations, markdown, or extra text.
+
+Output must strictly follow this schema:
+
+{
+  "invoices": [
+    {
+      "id": "string (unique invoice identifier)",
+      "serialNumber": "string (invoice number from document)",
+      "date": "string (YYYY-MM-DD format)",
+      "customerId": "string (reference to customer.id)",
+      "customerName": "string",
+      "customerCompany": "string (company name if available)",
+      "customerGSTIN": "string (GSTIN/Tax ID if available)",
+      "supplierGSTIN": "string (supplier's GSTIN if available)",
+      "placeOfSupply": "string (state/location)",
+      "items": [
+        {
+          "productId": "string (reference to product.id)",
+          "productName": "string",
+          "quantity": number,
+          "unit": "string (PCS, CASE, SQF, KG, etc.)",
+          "unitPrice": number (price without tax),
+          "taxRate": number (tax percentage: 0, 5, 12, 18, 28 etc.)",
+          "taxableValue": number (quantity × unitPrice),
+          "gstAmount": number (tax amount for this item)",
+          "priceWithTax": number (unitPrice including tax)",
+          "totalAmount": number (quantity × priceWithTax)
+          
+        }
+      ],
+      "charges": {
+        "makingCharges": number,
+        "shippingCharges": number,
+        "debitCardCharges": number,
+        "otherCharges": number
+      },
+      "totalItems": number (count of distinct products),
+      "totalQuantity": number (sum of all quantities),
+      "taxableAmount": number (sum before tax),
+      "cgst": number (Central GST total),
+      "sgst": number (State GST total),
+      "igst": number (Integrated GST total),
+      "totalTax": number (cgst + sgst + igst),
+      "subtotal": number (sum of items before charges),
+      "discount": number,
+      "grandTotal": number (final payable amount),
+      "amountPayable": number (same as grandTotal),
+      "status": "string (pending, paid, cancelled)",
+      "paymentDetails": {
+        "bank": "string",
+        "accountNumber": "string",
+        "ifscCode": "string",
+        "branch": "string",
+        "beneficiaryName": "string",
+        "upiEnabled": boolean
+      }
+    }
+  ],
+  "products": [
+    {
+      "id": "string (unique product identifier, e.g., product_001)",
+      "name": "string (normalized product name)",
+      "unit": "string (PCS, CASE, SQF, KG, etc.)",
+      "unitPrice": number (base price without tax)",
+      "taxRate": number (GST percentage)",
+      "priceWithTax": number (price including tax)",
+      "discount": number (amount of discounted price it will be a number deducted from base price,find disc written anywhere)",
+      "totalSold": number (sum of quantities across all invoices)",
+      "totalRevenue": number (sum of revenue from all invoices)"
+      "lastSoldDate": "string (YYYY-MM-DD of last sale, if not available use invoice date)"
+      "category": "string (type or category of the product || give unknown if it cannot be determined)"
+    }
+  ],
+  "customers": [
+    {
+      "id": "string (unique customer identifier, e.g., customer_001)",
+      "name": "string (customer name)",
+      "company": "string (company name if available)",
+      "gstin": "string (GSTIN/Tax ID if available)",
+      "phone": "string (phone number if available)",
+      "email": "string (email if available)",
+      "totalPurchaseAmount": number (sum of all invoice totals)",
+      "totalInvoices": number (count of invoices)",
+      "status": "string (active, inactive)",
+      "validationErrors": ["array of missing field names"],
+      "purchaseDate": "string (YYYY-MM-DD of last purchase, if not available use invoice date)"
+    }
+  ],
+  "metadata": {
+    "totalInvoices": number,
+    "totalProducts": number,
+    "totalCustomers": number,
+    "totalRevenue": number,
+    "totalTax": number,
+    "extractionDate": "string (ISO 8601 timestamp)",
+    "sourceFile": "string (filename)",
+    "validationStatus": "string (complete, partial, failed)",
+    "missingFields": ["array of missing critical fields"],
+    "warnings": ["array of extraction warnings/notes"]
+  }
+}w
+
+Rules:
+- If the same invoice number appears multiple times, group all items into ONE invoice.
+- Normalize product and customer names (case-insensitive, remove duplicates).
+- Maintain relationships using consistent IDs.
+- Use "" for missing text fields and 0 for missing numeric fields.
+- Add missing field names to validationErrors and metadata.missingFields.
+- Calculate all prices and taxes accurately:
+  taxableValue = quantity × unitPrice
+  gstAmount = taxableValue × (taxRate / 100)
+  priceWithTax = unitPrice × (1 + taxRate / 100)
+  totalAmount = quantity × priceWithTax
+- If only total GST is given, split equally into CGST and SGST for intra-state, or assign to IGST for inter-state.
+- Determine status using keywords: PAID, PENDING, CANCELLED, DUE (default: pending).
+- Dates must be converted to YYYY-MM-DD.
+- Ensure all totals match mathematically.
+- JSON must be valid and parsable.
+
+Now extract data from the following invoice input:
+`,
+        });
+      } else {
+        console.log("not excel xxxxxxxx");
+
+        const dataUrl = await readAsBase64(selectedFile);
+        // 2️⃣ Upload + AI processing
+        setStatus(STATUS.PROCESSING);
+
+        response = await postWithProgress("/api/process-file", {
+          dataUrl,
+          prompt: `You are an invoice data extraction AI. Extract structured data from invoice inputs (PDF text, Excel rows, OCR text from images, or mixed files).
+
+Return ONLY a valid JSON object. Do not include explanations, markdown, or extra text.
+
+Output must strictly follow this schema:
+
+{
+  "invoices": [
+    {
+      "id": "string (unique invoice identifier)",
+      "serialNumber": "string (invoice number from document)",
+      "date": "string (YYYY-MM-DD format)",
+      "customerId": "string (reference to customer.id)",
+      "customerName": "string",
+      "customerCompany": "string (company name if available)",
+      "customerGSTIN": "string (GSTIN/Tax ID if available)",
+      "supplierGSTIN": "string (supplier's GSTIN if available)",
+      "placeOfSupply": "string (state/location)",
+      "items": [
+        {
+          "productId": "string (reference to product.id)",
+          "productName": "string",
+          "quantity": number,
+          "unit": "string (PCS, CASE, SQF, KG, etc.)",
+          "unitPrice": number (price without tax),
+          "taxRate": number (tax percentage: 0, 5, 12, 18, 28 etc.)",
+          "taxableValue": number (quantity × unitPrice),
+          "gstAmount": number (tax amount for this item)",
+          "priceWithTax": number (unitPrice including tax)",
+          "totalAmount": number (quantity × priceWithTax)
+          
+        }
+      ],
+      "charges": {
+        "makingCharges": number,
+        "shippingCharges": number,
+        "debitCardCharges": number,
+        "otherCharges": number
+      },
+      "totalItems": number (count of distinct products),
+      "totalQuantity": number (sum of all quantities),
+      "taxableAmount": number (sum before tax),
+      "cgst": number (Central GST total),
+      "sgst": number (State GST total),
+      "igst": number (Integrated GST total),
+      "totalTax": number (cgst + sgst + igst),
+      "subtotal": number (sum of items before charges),
+      "discount": number,
+      "grandTotal": number (final payable amount),
+      "amountPayable": number (same as grandTotal),
+      "status": "string (pending, paid, cancelled)",
+      "paymentDetails": {
+        "bank": "string",
+        "accountNumber": "string",
+        "ifscCode": "string",
+        "branch": "string",
+        "beneficiaryName": "string",
+        "upiEnabled": boolean
+      }
+    }
+  ],
+  "products": [
+    {
+      "id": "string (unique product identifier, e.g., product_001)",
+      "name": "string (normalized product name)",
+      "unit": "string (PCS, CASE, SQF, KG, etc.)",
+      "unitPrice": number (base price without tax)",
+      "taxRate": number (GST percentage)",
+      "priceWithTax": number (price including tax)",
+      "discount": number (amount of discounted price it will be a number deducted from base price,find disc written anywhere)",
+      "totalSold": number (sum of quantities across all invoices)",
+      "totalRevenue": number (sum of revenue from all invoices)"
+      "lastSoldDate": "string (YYYY-MM-DD of last sale, if not available use invoice date)"
+      "category": "string (type or category of the product || give unknown if it cannot be determined)"
+    }
+  ],
+  "customers": [
+    {
+      "id": "string (unique customer identifier, e.g., customer_001)",
+      "name": "string (customer name)",
+      "company": "string (company name if available)",
+      "gstin": "string (GSTIN/Tax ID if available)",
+      "phone": "string (phone number if available)",
+      "email": "string (email if available)",
+      "totalPurchaseAmount": number (sum of all invoice totals)",
+      "totalInvoices": number (count of invoices)",
+      "status": "string (active, inactive)",
+      "validationErrors": ["array of missing field names"],
+      "purchaseDate": "string (YYYY-MM-DD of last purchase, if not available use invoice date)"
+    }
+  ],
+  "metadata": {
+    "totalInvoices": number,
+    "totalProducts": number,
+    "totalCustomers": number,
+    "totalRevenue": number,
+    "totalTax": number,
+    "extractionDate": "string (ISO 8601 timestamp)",
+    "sourceFile": "string (filename)",
+    "validationStatus": "string (complete, partial, failed)",
+    "missingFields": ["array of missing critical fields"],
+    "warnings": ["array of extraction warnings/notes"]
+  }
+}w
+
+Rules:
+- If the same invoice number appears multiple times, group all items into ONE invoice.
+- Normalize product and customer names (case-insensitive, remove duplicates).
+- Maintain relationships using consistent IDs.
+- Use "" for missing text fields and 0 for missing numeric fields.
+- Add missing field names to validationErrors and metadata.missingFields.
+- Calculate all prices and taxes accurately:
+  taxableValue = quantity × unitPrice
+  gstAmount = taxableValue × (taxRate / 100)
+  priceWithTax = unitPrice × (1 + taxRate / 100)
+  totalAmount = quantity × priceWithTax
+- If only total GST is given, split equally into CGST and SGST for intra-state, or assign to IGST for inter-state.
+- Determine status using keywords: PAID, PENDING, CANCELLED, DUE (default: pending).
+- Dates must be converted to YYYY-MM-DD.
+- Ensure all totals match mathematically.
+- JSON must be valid and parsable.
+
+Now extract data from the following invoice input:
+`,
+        });
+      }
       const processingTimer = simulateProcessing();
-
-      const response = await postWithProgress("/api/process-file", {
-        dataUrl,
-        prompt: `Extract invoice information from this document. Extract ALL line items, separating products and charges.
-          
-          IMPORTANT EXTRACTION RULES:
-          1. IGNORE the invoice maker's contact details (phone/email at the top of invoice)
-          2. For customer phone number: Look for Mobile, Ph, Contact ONLY in the Consignee/Customer section
-          3. For product tax: Calculate as sum of CGST + SGST shown for each product
-          4. For total tax: Sum all GST amounts (all CGST + SGST combined)
-          5. For priceWithTax: Multiply quantity * unitPrice and add tax amount
-          6. All amounts should be numbers without currency symbols
-          7. Quantity should be extracted as numbers only
-          8. DO NOT MAKE UP OR ASSUME ANY VALUES - if a field is not found, leave it empty
-
-          Return ONLY a valid JSON object with these specific requirements:
-
-          invoice: {
-            serialNumber: Invoice/Bill number exactly as shown,
-            totalAmount: Final total amount with all taxes and charges,
-            quantity: Total items purchased (sum of all product quantities),
-            tax: Sum of all GST amounts including all products (all CGST + SGST combined),
-            date: Invoice date exactly as shown,
-            customerName: Name from Consignee section only,
-            productName: Name of the first product only,
-            additionalCharges: {
-              makingCharges: Amount of making charges (if any),
-              debitCardCharges: Amount of debit card charges (if any),
-              shippingCharges: Total shipping charges (if any),
-              otherCharges: Any other additional charges
-            }
-          },
-          
-          products: Array of ONLY actual product items, each containing:
-            - name: Full product description
-            - quantity: Number of items (numeric only)
-            - unitPrice: Base price per item (numeric only)
-            - discount: Discount amount (if any, numeric only)
-            - tax: GST per product (CGST + SGST, numeric only)
-            - priceWithTax: (quantity * unitPrice) - discount + tax
-          
-          customer: {
-            name: Name from Consignee section only,
-            phoneNumber: Phone number from Consignee section only (if not found, leave empty),
-            totalPurchaseAmount: Same as invoice.totalAmount
-          }
-
-          Example structure (with placeholder values):
-          {
-            "invoice": {
-              "serialNumber": "[INVOICE_NUMBER]",
-              "customerName": "[CONSIGNEE_NAME]",
-              "productName": "[FIRST_PRODUCT_NAME]",
-              "totalAmount": "0.00",
-              "tax": "0.00",
-              "date": "[DATE]",
-              "additionalCharges": {
-                "makingCharges": "0.00",
-                "debitCardCharges": "0.00",
-                "shippingCharges": "0.00",
-                "otherCharges": "0.00"
-              }
-            },
-            "products": [
-              {
-                "name": "[PRODUCT_NAME]",
-                "quantity": "0",
-                "unitPrice": "0.00",
-                "discount": "0.00",
-                "tax": "0.00",
-                "priceWithTax": "0.00"
-              }
-            ],
-            "customer": {
-              "name": "[CONSIGNEE_NAME]",
-              "phoneNumber": "[CONSIGNEE_PHONE_NUMBER]",
-              "totalPurchaseAmount": "0.00"
-            }
-          }`,
-      });
 
       clearInterval(processingTimer);
       setProgress(100);
 
-      // 3️⃣ Store + Output
+      console.log("response received in uploadFile");
+      console.log(response);
+
       const invoices = response.invoices;
+
+      console.log("invoices in uploadFIle**********************************");
+      console.log(invoices);
 
       if (!Array.isArray(invoices)) {
         throw new Error("Invalid API response: invoices is not an array");
       }
 
       invoices.forEach((inv, index) => {
-        dispatch(
-          addInvoice({
-            ...inv.invoice,
-            id: v4(),
-          }),
-        );
-
-        if (inv.customer) {
+        inv.invoices.forEach((eachInvoice, index) => {
           dispatch(
-            addCustomer({
-              ...inv.customer,
+            addInvoice({
+              ...eachInvoice,
               id: v4(),
             }),
           );
+        });
+
+        console.log("customers in invoice");
+        console.log(inv.customers);
+
+        if (inv.customers) {
+          inv.customers.forEach((customer, cIndex) => {
+            dispatch(
+              addCustomer({
+                ...customer,
+                id: v4(),
+              }),
+            );
+          });
         }
 
         inv.products?.forEach((p, pIndex) => {
@@ -238,7 +445,7 @@ export default function FileUpload() {
       setStatus(STATUS.SUCCESS);
     } catch (err) {
       console.error(err);
-      setError(err.message + "here in catch" || "Something went wrong");
+      setError(err + "here in catch" || "Something went wrong");
       dispatch(setInvoiceError(err.message));
       setStatus(STATUS.ERROR);
     }
@@ -252,15 +459,11 @@ export default function FileUpload() {
     setOutput(null);
   };
 
-  DebugRedux();
+  // DebugRedux();
 
-  /* =========================
-     UI
-  ========================== */
   return (
     <div className="flex justify-center p-6">
       <div className="w-full max-w-3xl space-y-6">
-        {/* UPLOAD BOX */}
         <motion.div
           onDragOver={(e) => {
             e.preventDefault();
@@ -294,12 +497,15 @@ export default function FileUpload() {
           </label>
         </motion.div>
 
-        {/* PROGRESS */}
         {status !== STATUS.IDLE && status !== STATUS.ERROR && (
           <div className="space-y-2">
-            <Progress value={progress} />
+            {status !== STATUS.SUCCESS ? <Progress value={progress} /> : null}
             <p className="text-xs flex items-center gap-2 text-muted-foreground">
-              {status !== STATUS.SUCCESS ? <Loader2 className="h-3 w-3 animate-spin" /> : <CheckCircle2Icon className="h-3 w-3 text-green-600" />}
+              {status !== STATUS.SUCCESS ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : (
+                <CheckCircle2Icon className="h-3 w-3 text-green-600" />
+              )}
 
               {status === STATUS.UPLOADING && "Reading file..."}
               {status === STATUS.PROCESSING && "Analyzing with AI..."}
@@ -308,7 +514,6 @@ export default function FileUpload() {
           </div>
         )}
 
-        {/* STATUS */}
         {status === STATUS.ERROR && (
           <div className="flex gap-2 text-red-600 bg-red-50 p-3 rounded">
             <AlertCircle className="h-4 w-4" />
@@ -328,56 +533,6 @@ export default function FileUpload() {
             >
               Reset
             </Button>
-          </div>
-        )}
-
-        {/* =========================
-            OUTPUT SECTION
-        ========================== */
-        }
-
-        {output?.data && Array.isArray(output.data) && (
-          <div className="bg-white rounded-xl border p-6 space-y-6">
-            <h2 className="text-lg font-semibold">Extracted Output</h2>
-
-            {output.data
-              .filter((item) => item.invoice?.serialNumber !== "Totals")
-              .map((item, index) => (
-                <div
-                  key={index}
-                  className="border rounded-lg p-4 space-y-4 bg-gray-50"
-                >
-                  {/* INVOICE */}
-                  <section>
-                    <h3 className="font-medium mb-1">
-                      Invoice #{item.invoice?.serialNumber || index + 1}
-                    </h3>
-                    <pre className="bg-white p-3 rounded text-xs overflow-x-auto">
-                      {JSON.stringify(item.invoice, null, 2)}
-                    </pre>
-                  </section>
-
-                  {/* CUSTOMER */}
-                  {item.customer && (
-                    <section>
-                      <h3 className="font-medium mb-1">Customer</h3>
-                      <pre className="bg-white p-3 rounded text-xs overflow-x-auto">
-                        {JSON.stringify(item.customer, null, 2)}
-                      </pre>
-                    </section>
-                  )}
-
-                  {/* PRODUCTS */}
-                  {Array.isArray(item.products) && item.products.length > 0 && (
-                    <section>
-                      <h3 className="font-medium mb-1">Products</h3>
-                      <pre className="bg-white p-3 rounded text-xs overflow-x-auto">
-                        {JSON.stringify(item.products, null, 2)}
-                      </pre>
-                    </section>
-                  )}
-                </div>
-              ))}
           </div>
         )}
       </div>

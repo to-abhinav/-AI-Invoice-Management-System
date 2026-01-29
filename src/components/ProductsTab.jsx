@@ -118,9 +118,9 @@ export default function ProductsTable() {
   const products = useMemo(() => {
     return productsFromRedux.map((p) => ({
       productName: p.name ?? "Unnamed Product",
-      quantity: p.quantity,
+      quantity: p.totalSold,
       unitPrice: p.unitPrice,
-      tax: p.tax,
+      tax: p.taxRate,
       priceWithTax: p.priceWithTax,
       discount: p.discount,
       category: p.category,

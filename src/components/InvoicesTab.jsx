@@ -20,7 +20,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, MoreVertical, Search, AlertCircle } from "lucide-react";
 import {
   Pagination,
   PaginationContent,
@@ -28,88 +27,101 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { ChevronDown, MoreVertical, Search } from "lucide-react";
 import { useSelector } from "react-redux";
 
+/* ---------------------------------------------
+   Column Configuration
+--------------------------------------------- */
+
 const columns = [
-  { name: "S.No", uid: "serial" },
-  { name: "Invoice ID", uid: "invoiceId" },
-  { name: "Customer Name", uid: "customerName" },
-  { name: "Product Name", uid: "productName" },
-  { name: "Qty", uid: "quantity" },
-  { name: "Tax", uid: "tax" },
-  { name: "Total Amount", uid: "totalAmount" },
-  { name: "Date", uid: "date" },
+  { name: "S.No", uid: "serial", scope: "invoice" },
+  { name: "Invoice ID", uid: "invoiceId", scope: "invoice" },
+  { name: "Customer Name", uid: "customerName", scope: "invoice" },
+  { name: "Date", uid: "date", scope: "invoice" },
+
+  { name: "Product Name", uid: "productName", scope: "item" },
+  { name: "Qty", uid: "quantity", scope: "item" },
+  { name: "Price", uid: "unitPrice", scope: "item" },
+  { name: "Tax", uid: "gstAmount", scope: "item" },
+  { name: "Total Amount", uid: "totalAmount", scope: "item" },
 ];
 
 export default function InvoicesTable() {
+  /* ---------------------------------------------
+     State
+  --------------------------------------------- */
+
   const [filterValue, setFilterValue] = useState("");
-  const [visibleColumns, setVisibleColumns] = useState(
-    new Set(columns.map((c) => c.uid)),
-  );
   const [page, setPage] = useState(1);
   const [rowsPerPage] = useState(5);
-  const [sortColumn, setSortColumn] = useState("date");
-  const [sortDirection, setSortDirection] = useState("asc");
+  const [visibleColumns, setVisibleColumns] = useState(
+    new Set(columns.map((c) => c.uid))
+  );
+
   const invoicesFromRedux =
     useSelector((state) => state.invoices.invoiceList) || [];
 
-  const tableInvoices = useMemo(() => {
+  /* ---------------------------------------------
+     Normalize invoices (DO NOT FLATTEN)
+  --------------------------------------------- */
+
+  const invoices = useMemo(() => {
     return invoicesFromRedux.map((inv) => ({
-      invoiceId: inv.serialNumber,
+      id: inv.id,
+      serialNumber: inv.serialNumber,
       customerName: inv.customerName,
-      productName: inv.productName,
-      quantity: inv.quantity,
-      tax: inv.tax,
-      totalAmount: inv.totalAmount,
       date: inv.date,
-      serial: inv.serialNumber,
+      items: inv.items || [],
     }));
   }, [invoicesFromRedux]);
 
-  // Filter
-  const filtered = useMemo(() => {
-    return tableInvoices.filter(
-      (invoice) =>
-        invoice.customerName
-          ?.toLowerCase()
-          .includes(filterValue.toLowerCase()) ||
-        invoice.productName?.toLowerCase().includes(filterValue.toLowerCase()),
-    );
-  }, [filterValue]);
+  /* ---------------------------------------------
+     Filter (Invoice + Item level)
+  --------------------------------------------- */
 
-  // Sort
-  const sorted = useMemo(() => {
-    const sortedData = [...filtered].sort((a, b) => {
-      const aVal = a[sortColumn];
-      const bVal = b[sortColumn];
-      const cmp = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
-      return sortDirection === "asc" ? cmp : -cmp;
+  const filteredInvoices = useMemo(() => {
+    if (!filterValue.trim()) return invoices;
+
+    const q = filterValue.toLowerCase();
+
+    return invoices.filter((inv) => {
+      const invoiceMatch =
+        inv.customerName?.toLowerCase().includes(q) ||
+        inv.serialNumber?.toLowerCase().includes(q);
+
+      const itemMatch = inv.items.some((item) =>
+        item.productName?.toLowerCase().includes(q)
+      );
+
+      return invoiceMatch || itemMatch;
     });
-    return sortedData;
-  }, [filtered, sortColumn, sortDirection]);
+  }, [invoices, filterValue]);
 
-  // Paginate
-  const pages = Math.ceil(sorted.length / rowsPerPage);
-  const paginated = useMemo(() => {
+  /* ---------------------------------------------
+     Pagination (Invoice-based)
+  --------------------------------------------- */
+
+  const pages = Math.ceil(filteredInvoices.length / rowsPerPage);
+
+  const paginatedInvoices = useMemo(() => {
     const start = (page - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
-    return sorted.slice(start, end);
-  }, [sorted, page, rowsPerPage]);
+    return filteredInvoices.slice(start, start + rowsPerPage);
+  }, [filteredInvoices, page, rowsPerPage]);
 
-  // if (tableInvoices.length === 0) {
-  //   return (
-  //     <div className="flex flex-col items-center justify-center h-64 space-y-4">
-  //       <p className="text-lg text-gray-600">No invoices available.</p>
-  //     </div>
-  //   );
-  // }
+  /* ---------------------------------------------
+     Render
+  --------------------------------------------- */
 
   return (
     <div className="p-6 space-y-4">
-      {/* Top Controls */}
+      {/* ---------------------------------------------
+          Top Controls
+      --------------------------------------------- */}
+
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
         <div className="relative sm:max-w-[44%] w-full">
-          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <Input
             placeholder="Search by Customer or Product Name..."
             className="pl-8"
@@ -127,6 +139,7 @@ export default function InvoicesTable() {
               Columns <ChevronDown className="w-4 h-4 ml-1" />
             </Button>
           </DropdownMenuTrigger>
+
           <DropdownMenuContent align="end" className="w-48">
             <DropdownMenuLabel>Visible Columns</DropdownMenuLabel>
             <DropdownMenuSeparator />
@@ -148,7 +161,10 @@ export default function InvoicesTable() {
         </DropdownMenu>
       </div>
 
-      {/* Table */}
+      {/* ---------------------------------------------
+          Table
+      --------------------------------------------- */}
+
       <div className="border rounded-md overflow-hidden">
         <Table>
           <TableHeader>
@@ -156,72 +172,105 @@ export default function InvoicesTable() {
               {columns
                 .filter((c) => visibleColumns.has(c.uid))
                 .map((col) => (
-                  <TableHead
-                    key={col.uid}
-                    className="cursor-pointer"
-                    onClick={() => {
-                      if (col.uid === "serial") return;
-                      setSortColumn(col.uid);
-                      setSortDirection((prev) =>
-                        sortColumn === col.uid && prev === "asc"
-                          ? "desc"
-                          : "asc",
-                      );
-                    }}
-                  >
-                    {col.name}
-                    {sortColumn === col.uid && (
-                      <span className="ml-1 text-xs">
-                        {sortDirection === "asc" ? "↑" : "↓"}
-                      </span>
-                    )}
-                  </TableHead>
+                  <TableHead key={col.uid}>{col.name}</TableHead>
                 ))}
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
 
           <TableBody>
-            {paginated.length > 0 ? (
-              paginated.map((invoice, index) => (
-                <TableRow key={index}>
-                  {columns
-                    .filter((c) => visibleColumns.has(c.uid))
-                    .map((col) => (
-                      <TableCell key={col.uid}>
-                        {/* Missing Data Indicator */}
-                        {col.uid === "serial" ? (
-                          (page - 1) * rowsPerPage + index + 1
-                        ) : !invoice[col.uid] || invoice[col.uid] === "" ? (
-                          <div className="flex items-center gap-1 text-red-600 text-sm">
-                            <AlertCircle className="w-4 h-4" />
-                            Missing
-                          </div>
-                        ) : col.uid === "totalAmount" ? (
-                          `₹${invoice[col.uid].toLocaleString("en-IN")}`
-                        ) : (
-                          invoice[col.uid]
-                        )}
+            {paginatedInvoices.length > 0 ? (
+              paginatedInvoices.map((invoice, invoiceIndex) =>
+                invoice.items.map((item, itemIndex) => (
+                  <TableRow
+                    key={`${invoice.id}-${item.productId}`}
+                    className={itemIndex === 0 ? "bg-muted/20" : ""}
+                  >
+                    {/* -----------------------------
+                        Invoice-level cells (rowSpan)
+                    ----------------------------- */}
+                    {itemIndex === 0 && visibleColumns.has("serial") && (
+                      <TableCell rowSpan={invoice.items.length}>
+                        {(page - 1) * rowsPerPage + invoiceIndex + 1}
                       </TableCell>
-                    ))}
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <MoreVertical className="w-4 h-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>View</DropdownMenuItem>
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-500">
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))
+                    )}
+
+                    {itemIndex === 0 && visibleColumns.has("invoiceId") && (
+                      <TableCell rowSpan={invoice.items.length}>
+                        {invoice.serialNumber}
+                      </TableCell>
+                    )}
+
+                    {itemIndex === 0 && visibleColumns.has("customerName") && (
+                      <TableCell rowSpan={invoice.items.length}>
+                        {invoice.customerName}
+                      </TableCell>
+                    )}
+
+                    {itemIndex === 0 && visibleColumns.has("date") && (
+                      <TableCell rowSpan={invoice.items.length}>
+                        {invoice.date}
+                      </TableCell>
+                    )}
+
+                    {/* -----------------------------
+                        Item-level cells
+                    ----------------------------- */}
+
+                    {visibleColumns.has("productName") && (
+                      <TableCell>{item.productName}</TableCell>
+                    )}
+
+                    {visibleColumns.has("quantity") && (
+                      <TableCell>{item.quantity}</TableCell>
+                    )}
+
+                    {visibleColumns.has("unitPrice") && (
+                      <TableCell>
+                        ₹{item.unitPrice.toLocaleString("en-IN")}
+                      </TableCell>
+                    )}
+
+                    {visibleColumns.has("gstAmount") && (
+                      <TableCell>
+                        ₹{item.gstAmount.toLocaleString("en-IN")}
+                      </TableCell>
+                    )}
+
+                    {visibleColumns.has("totalAmount") && (
+                      <TableCell className="font-medium">
+                        ₹{item.totalAmount.toLocaleString("en-IN")}
+                      </TableCell>
+                    )}
+
+                    {/* -----------------------------
+                        Actions (once per invoice)
+                    ----------------------------- */}
+                    {itemIndex === 0 && (
+                      <TableCell rowSpan={invoice.items.length}>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                            >
+                              <MoreVertical className="w-4 h-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem>View</DropdownMenuItem>
+                            <DropdownMenuItem>Edit</DropdownMenuItem>
+                            <DropdownMenuItem className="text-red-500">
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    )}
+                  </TableRow>
+                ))
+              )
             ) : (
               <TableRow>
                 <TableCell
@@ -236,11 +285,15 @@ export default function InvoicesTable() {
         </Table>
       </div>
 
-      {/* Pagination */}
+      {/* ---------------------------------------------
+          Pagination
+      --------------------------------------------- */}
+
       <div className="flex justify-between items-center pt-2">
         <p className="text-sm text-muted-foreground">
-          Showing {paginated.length} of {filtered.length} invoices
+          Showing {paginatedInvoices.length} of {filteredInvoices.length} invoices
         </p>
+
         <Pagination>
           <PaginationContent>
             <PaginationItem>

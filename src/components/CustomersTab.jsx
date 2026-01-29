@@ -74,7 +74,7 @@ export default function CustomersTable() {
     return customersFromRedux.map((c) => ({
       id: c.id,
       customerName: c.name || "",
-      phone: c.phoneNumber || "",
+      phone: c.phone || "",
       email: c.email || "",
       totalAmount: Number(c.totalPurchaseAmount || 0),
       purchaseDate: c.purchaseDate || "-",

@@ -15,33 +15,67 @@ function toNumber(value) {
 }
 
 export function sanitizeInvoiceData(data) {
-  // Invoice
-  const inv = data.invoice;
-  inv.quantity = toNumber(inv.quantity);
-  inv.totalAmount = toNumber(inv.totalAmount);
-  inv.tax = toNumber(inv.tax);
-
-  if (inv.additionalCharges) {
-    for (const key of Object.keys(inv.additionalCharges)) {
-      inv.additionalCharges[key] = toNumber(inv.additionalCharges[key]);
+ 
+  data.invoices = (data.invoices || []).map((inv) => {
+    if (inv.charges) {
+      for (const key of Object.keys(inv.charges)) {
+        inv.charges[key] = toNumber(inv.charges[key]);
+      }
     }
-  }
 
-  // Products
-  data.products = data.products.map((p) => ({
+    inv.taxableAmount = toNumber(inv.taxableAmount);
+    inv.cgst = toNumber(inv.cgst);
+    inv.sgst = toNumber(inv.sgst);
+    inv.igst = toNumber(inv.igst);
+    inv.totalTax = toNumber(inv.totalTax);
+    inv.subtotal = toNumber(inv.subtotal);
+    inv.discount = toNumber(inv.discount);
+    inv.roundOff = toNumber(inv.roundOff);
+    inv.grandTotal = toNumber(inv.grandTotal);
+    inv.amountPayable = toNumber(inv.amountPayable);
+    inv.totalQuantity = toNumber(inv.totalQuantity);
+    inv.totalItems = toNumber(inv.totalItems);
+
+    // Items
+    inv.items = (inv.items || []).map((item) => ({
+      ...item,
+      quantity: toNumber(item.quantity),
+      unitPrice: toNumber(item.unitPrice),
+      taxRate: toNumber(item.taxRate),
+      taxableValue: toNumber(item.taxableValue),
+      gstAmount: toNumber(item.gstAmount),
+      priceWithTax: toNumber(item.priceWithTax),
+      totalAmount: toNumber(item.totalAmount),
+    }));
+
+    return inv;
+  });
+
+ 
+  data.products = (data.products || []).map((p) => ({
     ...p,
-    quantity: toNumber(p.quantity),
     unitPrice: toNumber(p.unitPrice),
-    discount: toNumber(p.discount),
-    tax: toNumber(p.tax),
+    taxRate: toNumber(p.taxRate),
     priceWithTax: toNumber(p.priceWithTax),
+    discount: toNumber(p.discount),
+    totalSold: toNumber(p.totalSold),
+    totalRevenue: toNumber(p.totalRevenue),
   }));
 
-  // Customer
-  if (data.customer) {
-    data.customer.totalPurchaseAmount = toNumber(
-      data.customer.totalPurchaseAmount
-    );
+  
+  data.customers = (data.customers || []).map((c) => ({
+    ...c,
+    totalPurchaseAmount: toNumber(c.totalPurchaseAmount),
+    totalInvoices: toNumber(c.totalInvoices),
+  }));
+
+
+  if (data.metadata) {
+    data.metadata.totalInvoices = toNumber(data.metadata.totalInvoices);
+    data.metadata.totalProducts = toNumber(data.metadata.totalProducts);
+    data.metadata.totalCustomers = toNumber(data.metadata.totalCustomers);
+    data.metadata.totalRevenue = toNumber(data.metadata.totalRevenue);
+    data.metadata.totalTax = toNumber(data.metadata.totalTax);
   }
 
   return data;

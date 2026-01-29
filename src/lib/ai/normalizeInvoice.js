@@ -9,8 +9,8 @@ export function normalizeProducts(products = []) {
     } else {
       const existing = map.get(key);
 
-      existing.quantity += product.quantity;
-      existing.tax += product.tax;
+      existing.totalSold += product.totalSold;
+      existing.taxRate += product.taxRate;
       existing.priceWithTax += product.priceWithTax;
     }
   }

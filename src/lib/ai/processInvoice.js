@@ -1,5 +1,4 @@
 import { gemini } from "./geminiClient";
-import { excelToText } from "./excelToText";
 import { InvoiceSchema } from "../schema/invoiceSchema";
 import { normalizeProducts } from "./normalizeInvoice";
 import { sanitizeInvoiceData } from "./sanitizeInvoice";
@@ -93,17 +92,17 @@ try {
 }
 
 
-// Normalize duplicates FIRST
+
 parsed.products = normalizeProducts(parsed.products);
 
-// Sanitize numeric fields SECOND
+
 parsed = sanitizeInvoiceData(parsed);
 
-// Validate LAST
+
 const validated = InvoiceSchema.safeParse(parsed);
 
 if (!validated.success) {
-  console.error("Schema errors:", validated.error.format());
+  console.error("Schema errors:", validated.error);
   throw new Error("Schema validation failed");
 }
 

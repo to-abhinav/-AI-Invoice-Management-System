@@ -6,7 +6,6 @@ export function normalizeInvoiceData(rawInvoices) {
   rawInvoices.forEach((entry, index) => {
     const { invoice, customer, products } = entry;
 
-    /* ---------------- INVOICES TABLE ---------------- */
     invoicesTable.push({
       serial: index + 1,
       invoiceId: invoice.serialNumber || "-",
@@ -18,7 +17,6 @@ export function normalizeInvoiceData(rawInvoices) {
       date: invoice.date || "",
     });
 
-    /* ---------------- CUSTOMERS TABLE ---------------- */
     const custKey = invoice.customerName || customer.name || "UNKNOWN";
 
     if (!customersMap.has(custKey)) {
@@ -34,7 +32,6 @@ export function normalizeInvoiceData(rawInvoices) {
         Number(customer.totalPurchaseAmount) || 0;
     }
 
-    /* ---------------- PRODUCTS TABLE ---------------- */
     products.forEach((p) => {
       const prodKey = p.name;
 
