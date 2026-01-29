@@ -997,8 +997,8 @@ SOFTWARE.
 
 ![GitHub Stars](https://img.shields.io/github/stars/to-abhinav/-AI-Invoice-Management-System?style=social)
 ![GitHub Forks](https://img.shields.io/github/forks/to-abhinav/-AI-Invoice-Management-System?style=social)
-![GitHub Issues](https://img.shields.io/github/issues/to-abhinav/-AI-Invoice-Management-System-system)
-![GitHub Pull Requests](https://img.shields.io/github/issues-pr/to-abhinav/-AI-Invoice-Management-System-system)
+![GitHub Issues](https://img.shields.io/github/issues/to-abhinav/-AI-Invoice-Management-System)
+![GitHub Pull Requests](https://img.shields.io/github/issues-pr/to-abhinav/-AI-Invoice-Management-System)
 
 
 
